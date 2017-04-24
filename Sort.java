@@ -6,7 +6,7 @@ import java.util.ListIterator;
  * using ordering defined by class of objects in list or a Comparator.
  * As written uses Quicksort algorithm.
  *
- * @author CS221
+ * @author CS221, Nathan King
  */
 public class Sort
 {	
@@ -69,45 +69,22 @@ public class Sort
 	 */
 	private static <T extends Comparable<T>> void quicksort(IndexedUnsortedList<T> list)
 	{
-		// TODO: Implement recursive quicksort algorithm
+		// Base case
 		if(list.size() < 2) {
 			return;
 		}
 		//pick pivot point (simplest is first element)
-		T pivot = list.first();
+		T pivot = list.removeFirst();
 		
 		//elements less than pivot element are moved into left list, greater than to right
 		IndexedUnsortedList<T> leftList = newList();
 		IndexedUnsortedList<T> rightList = newList();
 		
-		/*
-		 * This method would leave elements in previous list, complicating things
-		 */
-//		for(T e: list){
-//			if(e.compareTo(pivot) < 0) {
-//				leftList.add(e);
-//			}else{
-//				rightList.add(e);
-//			}
-//		}
-		
-		/*
-		 * Causes ConcurrentModificationException
-		 */
-//		ListIterator<T> iter = list.listIterator();
-//		while(!list.isEmpty()){
-//			if(iter.next().compareTo(pivot) > 0){
-//				leftList.add(list.removeFirst());
-//			}else{
-//				rightList.add(list.removeFirst());
-//			}
-//		}
-		
 		while(!list.isEmpty()){
 			if(list.first().compareTo(pivot) > 0){
-				leftList.add(list.removeFirst());
-			}else{
 				rightList.add(list.removeFirst());
+			}else{
+				leftList.add(list.removeFirst());
 			}
 		}
 		//left list has all elements prior to pivot, right list has all after pivot or equal to
@@ -120,9 +97,13 @@ public class Sort
 		while(!leftList.isEmpty()){
 			list.add(leftList.removeFirst());
 		}
+		
+		list.add(pivot);
+		
 		while(!rightList.isEmpty()){
 			list.add(rightList.removeFirst());
 		}
+		//StackOverflowError after first two tests failing??????
 	}
 		
 	/**
@@ -140,7 +121,41 @@ public class Sort
 	 */
 	private static <T> void quicksort(IndexedUnsortedList<T> list, Comparator<T> c)
 	{
-		// TODO: Implement recursive quicksort algorithm using Comparator
+		// Base case
+				if(list.size() < 2) {
+					return;
+				}
+				//pick pivot point (simplest is first element)
+				T pivot = list.removeFirst();
+				
+				//elements less than pivot element are moved into left list, greater than to right
+				IndexedUnsortedList<T> leftList = newList();
+				IndexedUnsortedList<T> rightList = newList();
+				
+				while(!list.isEmpty()){
+					if(c.compare(list.first(), pivot) > 0){
+						rightList.add(list.removeFirst());
+					}else{
+						leftList.add(list.removeFirst());
+					}
+				}
+				//left list has all elements prior to pivot, right list has all after pivot or equal to
+				
+				//recursively sort lists
+				quicksort(leftList, c);
+				quicksort(rightList, c);
+				
+				//left list and right lists are now sorted, must now merge two lists
+				while(!leftList.isEmpty()){
+					list.add(leftList.removeFirst());
+				}
+				
+				list.add(pivot);
+				
+				while(!rightList.isEmpty()){
+					list.add(rightList.removeFirst());
+				}
+				//StackOverflowError after first two tests failing??????
 
 	}
 	
