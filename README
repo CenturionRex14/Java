@@ -1,0 +1,121 @@
+****************
+* DoubleLinkedList
+* CS221-2
+* 05/09/2017
+* Nathan King
+**************** 
+
+OVERVIEW:
+
+ IUDoubleLinkedList.java implements a IndexedUnsortedList 
+ interface and uses double-linked linear nodes to store 
+ elements of the list. Has its on ListIterator, DLLIterator.
+
+
+INCLUDED FILES:
+
+ * IUDoubleLinkedList.java - source file
+ * IndexedUnsortedList.java - interface file
+ * LinearNode.java - source file
+ * ListTester.java - test suit
+ * README - this file
+
+
+COMPILING AND RUNNING:
+
+ From the directory containing all source files, compile the test
+ class (and all dependent classes) with the command:
+ $ javac IUDoubleLinkedList.java
+ $ javac ListTester.java
+ 
+ Run the compiled SetTester class with the command:
+ $ java ListTester
+ 
+ Console output will give the results after the program finishes.
+
+PROGRAM DESIGN AND IMPORTANT CONCEPTS:
+
+ IUDoubleLinkedList organizes elements based on the IndexedUnsortedList 
+ interface. This means that it has methods that allow the user to build a list
+ that can be accessed at both ends and at indexes making it an simple and easy 
+ way to store elements.
+
+ IUDoubleLinkedList has an inner class, DLLIterator, which is used as it iterator
+ for navigating its list. Its function is determined by a ListIterator interface.
+ 
+ IUDoubleLinkedList was designed one method at a time, using multiple 
+ ideas to solve problems as I learned them. Some methods use very 
+ traditional ways of solving problems, at least in my mind, while others 
+ use more clever methods such as using the class's iterator to solve 
+ problems. Each method was built based on what I saw was the easiest and 
+ simplest way to solve the problem.
+
+ If there is anything to improve, it would be to make all the methods solve their problems 
+ in the same ways. That is, don't have some that use the class' iterator and some 
+ that don't, but rather have all the methods not use the iterator or none. Also, there 
+ could always be more tests. I didn't write nearly as much as I would have liked, but with 
+ there being time restraints, I could only pick and choose what tests to write.
+ 
+ And if one is going to make improvements to the code, make sure to look at all 
+ of the documentation for methods as they can be tricky to understand, 
+ especially in the ListIterator's methods.
+
+TESTING:
+
+ ListTester.java is the test suit used to test IUDoubleLinkedList.java. It has over 
+ 1400 tests based on different scenarios that covers as many bugs as possible based 
+ on the time restraint. This test suit was also used on other list classes 
+ as it is based on the IndexedUnsortedList interface which means any class that implements 
+ this interface can be tested by ListTester.java.
+
+ I built the test suit, or rather unit tests, by referring to a test plan that I built 
+ before even writing a class. It was planned based completely on the interface for an indexed
+ unsorted list and had no code in it whatsoever. It was solely a plan that outlined what tests I 
+ would run, which were outlined by a change scenario and then calls to specified methods to 
+ ensure the actual results and expected results are the same. It was the best way to make sure 
+ I tested as many ways as possible for how my list class could fail.
+
+ The actual test class, ListTester.java, was built over time as I used it in different
+ implementations of the IndexedUndortedList interface. Each time I built a new list class, 
+ for instance an array-based implementation and then a single-linked node implementation, 
+ I added more tests I felt covered the most amount of possible issues. Each time I added new 
+ tests, I found a new bug I would have never found otherwise. Which means it is really important 
+ to have an extensive test class, because otherwise there are going to be bugs.
+ 
+ The main difference with this test class is that it has additional tests that focus on the new 
+ methods associated with the ListIterator. Previous testing was based off a simple Iterator class, 
+ which means that I had to ass new tests that ensured the ListIterator's remove(), hasPrevious(), 
+ previous(), and set() methods all worked as they should. Right away as I was implementing these 
+ tests I found a bug in my hasPrevious() method which would have caused a lot of problems if never 
+ found since so many other methods depend on hasPrevious() being correctly implemented.
+ 
+ Overall, even though building a test class seemed like a waste of time, it saves so much time 
+ later on when debugging. Debugging takes of the majority of time while coding, so spending not 
+ even half that on writing a test class shows you where the issues are is extremely worth it. 
+ Also, having the test class ensures a much higher level of work that I am far more confident in.
+
+
+DISCUSSION:
+
+ NullPointerExceptions are the bane of this project. I rarely had any other problems 
+ than these as I always seemed to miss something when finishing up a method. The 
+ Debugger has become my best friend to find these problems along with a few others 
+ such as values not being what they should be. But overall, the actual class  
+ building went rather smoothly. I drew pictures and did a pretty good job making the 
+ methods work on the first try, with only a few giving me troubles. The method that 
+ gave me the most trouble was strangely enough the hasPrevious() method as I made a 
+ very simple and silly mistake that took me way too long than I'd like to admit to fix. 
+ The most satisfying part about this whole project is seeing when all the tests finally 
+ pass. But then immediately having to fix more bugs as I implement more tests tends to 
+ kill that joy.
+ 
+ I am proud of my work during this project, only wishing I had time to implement more tests 
+ to ensure all of the new methods in the ListIterator are functioning properly. I am rather 
+ confident in them based on what tests I did implement, but there is still a part of me that 
+ is nervous it will all fall apart based on one simple error, much like the one I found in 
+ the hasPrevious() method.
+ 
+EXTRA CREDIT:
+
+ NA
+
