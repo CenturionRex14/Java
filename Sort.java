@@ -103,7 +103,7 @@ public class Sort
 		while(!rightList.isEmpty()){
 			list.add(rightList.removeFirst());
 		}
-		//StackOverflowError after first two tests failing??????
+		
 	}
 		
 	/**
@@ -155,7 +155,7 @@ public class Sort
 				while(!rightList.isEmpty()){
 					list.add(rightList.removeFirst());
 				}
-				//StackOverflowError after first two tests failing??????
+				
 
 	}
 	
