@@ -50,8 +50,13 @@ public class CircuitTracer {
 		//TODO: initialize the Storage to use either a stack or queue
 		//TODO: read in the CircuitBoard from the given file
 		//TODO: run the search for best paths
+		Storage<TraceState> stateStore = new Storage<TraceState>(null);
+		IUDoubleLinkedList<TraceState> bestPaths = new IUDoubleLinkedList<TraceState>();
+		
 		//TODO: output results to console or GUI, according to specified choice
 
 	}
+	
+	
 	
 } // class CircuitTracer

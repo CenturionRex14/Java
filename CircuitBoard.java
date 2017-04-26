@@ -22,6 +22,7 @@ public class CircuitBoard {
 	private final char START = '1';
 	private final char END = '2';
 	private final String ALLOWED_CHARS = "OXT12";
+	private static IUDoubleLinkedList<Character> allowedCharList = new IUDoubleLinkedList<Character>();
 
 	/** Construct a CircuitBoard from a given board input file, where the first
 	 * line contains the number of rows and columns as ints and each subsequent
@@ -40,15 +41,72 @@ public class CircuitBoard {
 	 * @throws InvalidFileFormatException for any other format or content issue that prevents reading a valid input file
 	 */
 	public CircuitBoard(String filename) throws FileNotFoundException {
-		Scanner fileScan = new Scanner(new File(filename));
-		
 		//TODO: parse the given file to populate the char[][]
 		// throw FileNotFoundException if Scanner cannot read the file
 		// throw InvalidFileFormatException if any formatting or parsing issues are encountered
+		Scanner fileScan = new Scanner(new File(filename));
+		ROWS = Integer.parseInt(fileScan.next());
+		COLS = Integer.parseInt(fileScan.next());
+		/*
+		 * Builds list containing valid characters
+		 */
+		allowedCharList.add('O');
+		allowedCharList.add('X');
+		allowedCharList.add('T');
+		allowedCharList.add('1');
+		allowedCharList.add('2');
+		/*
+		 * Builds list containing invalid characters i.e. repeated start or end points
+		 */
+		IUDoubleLinkedList<Character> usedCharList = new IUDoubleLinkedList<Character>();
 		
-		ROWS = 0; //replace with initialization statements using values from file
-		COLS = 0;
+		board = new char[ROWS][COLS];
+		int j = 0;
+		int i = 0;
+		while(fileScan.hasNext()){
+			String nextLine = fileScan.next();
+			char nextChar = nextLine.charAt(0);
+			/*
+			 * Checks if char is valid
+			 */
+			if(!allowedCharList.contains(nextChar)){
+				throw new InvalidFileFormatException(null);
+			}
+			/*
+			 * Checks if start or end points are repeated
+			 */
+			if(nextChar == '1' || nextChar == '2'){
+				if(usedCharList.contains(nextChar)){
+					throw new InvalidFileFormatException(null);
+				}else{
+					usedCharList.add(nextChar);
+				}
+			}
+			if(j < COLS){
+				board[i][j] = nextChar;
+				j++;
+			}else{
+				j = 0;
+				i++;
+				board[i][j] = nextChar;
+				j++;
+			}
+		}
+		/*
+		 * Checks if given dimensions match actual dimensions
+		 * TODO ensure rows and cols are as specified (don't know how)
+		 */
+		if(j != COLS || i != ROWS - 1){
+			throw new InvalidFileFormatException(null);
+		}
 		
+		
+		/*
+		 * Checks if file has both start and end points
+		 */
+		if(!usedCharList.contains('1') || !usedCharList.contains('2')){
+			throw new InvalidFileFormatException(null);
+		}
 		fileScan.close();
 	}
 	
