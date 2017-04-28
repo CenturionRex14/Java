@@ -70,7 +70,7 @@ public class CircuitTracer {
 		}
 		String filename = args[2]; //filename
 		if(secondArg.equals("-g")){
-			System.out.println("GUI(-q) not supported. Running in console(-c).");
+			System.out.println("GUI(-q) not supported, running in console(-c).\n");
 			secondArg = "-c";
 		}
 		//TODO: initialize the Storage to use either a stack or queue
@@ -83,7 +83,13 @@ public class CircuitTracer {
 		try {
 			board = new CircuitBoard(filename);
 		} catch (FileNotFoundException e) {
-			System.out.println("File Not Found");
+			System.err.println("File not found.");
+			return;
+		} catch (InvalidFileFormatException e){
+			System.err.println("Invalid file format.");
+			return;
+		} catch (NumberFormatException e){
+			System.err.println("Invalid number format.");
 			return;
 		}
 		//TODO: run the search for best paths
@@ -91,12 +97,12 @@ public class CircuitTracer {
 		/*
 		 * manual solution to finding first trace points
 		 */
-		if(board.isOpen(board.getStartingPoint().x -1, board.getStartingPoint().y)){ //checks point below starting
-			TraceState below = new TraceState(board, board.getStartingPoint().x -1, board.getStartingPoint().y);
+		if(board.isOpen(board.getStartingPoint().x + 1, board.getStartingPoint().y)){ //checks point below starting
+			TraceState below = new TraceState(board, board.getStartingPoint().x + 1, board.getStartingPoint().y);
 			stateStore.store(below);
 		}
-		if(board.isOpen(board.getStartingPoint().x + 1, board.getStartingPoint().y)){ //checks point above starting
-			TraceState above = new TraceState(board, board.getStartingPoint().x + 1, board.getStartingPoint().y);
+		if(board.isOpen(board.getStartingPoint().x - 1, board.getStartingPoint().y)){ //checks point above starting
+			TraceState above = new TraceState(board, board.getStartingPoint().x - 1, board.getStartingPoint().y);
 			stateStore.store(above);
 		}
 		if(board.isOpen(board.getStartingPoint().x, board.getStartingPoint().y - 1)){ //checks point left of starting
@@ -111,9 +117,9 @@ public class CircuitTracer {
 			TraceState nextTrace = stateStore.retreive();
 			if(nextTrace.isComplete()){
 				if(!bestPaths.isEmpty()){
-					if(nextTrace.getPath().size() == bestPaths.get(0).pathLength()){
+					if(nextTrace.pathLength() == bestPaths.get(0).pathLength()){
 						bestPaths.add(nextTrace);
-					}else if(nextTrace.getPath().size() < bestPaths.get(0).pathLength()){
+					}else if(nextTrace.pathLength() < bestPaths.get(0).pathLength()){
 						bestPaths.clear();
 						bestPaths.add(nextTrace);
 					}
@@ -121,26 +127,31 @@ public class CircuitTracer {
 					bestPaths.add(nextTrace);
 				}
 			}else{ //generate all valid next TraceState objects from the current TraceState and add them to stateStore
-				if(board.isOpen(nextTrace.getRow() - 1, nextTrace.getCol())){ //checks point below nextTrace
-					TraceState newBelow = new TraceState(board, nextTrace.getRow() - 1, nextTrace.getCol());
+				if(nextTrace.getBoard().isOpen(nextTrace.getRow() + 1, nextTrace.getCol())){ //checks point below nextTrace
+					TraceState newBelow = new TraceState(nextTrace, nextTrace.getRow() + 1, nextTrace.getCol());
 					stateStore.store(newBelow);
 				}
-				if(board.isOpen(nextTrace.getRow() + 1, nextTrace.getCol())){ //checks point above nextTrace
-					TraceState newAbove = new TraceState(board, nextTrace.getRow() + 1, nextTrace.getCol());
+				if(nextTrace.getBoard().isOpen(nextTrace.getRow() - 1, nextTrace.getCol())){ //checks point above nextTrace
+					TraceState newAbove = new TraceState(nextTrace, nextTrace.getRow() - 1, nextTrace.getCol());
 					stateStore.store(newAbove);
 				}
-				if(board.isOpen(nextTrace.getRow(), nextTrace.getCol() - 1)){ //checks point left of nextTrace
-					TraceState newLeft = new TraceState(board, nextTrace.getRow(), nextTrace.getCol() - 1);
+				if(nextTrace.getBoard().isOpen(nextTrace.getRow(), nextTrace.getCol() - 1)){ //checks point left of nextTrace
+					TraceState newLeft = new TraceState(nextTrace, nextTrace.getRow(), nextTrace.getCol() - 1);
 					stateStore.store(newLeft);
 				}
-				if(board.isOpen(nextTrace.getRow(), nextTrace.getCol() + 1)){ //checks point right of nextTrace
-					TraceState newRight = new TraceState(board, nextTrace.getRow(), nextTrace.getCol() + 1);
+				if(nextTrace.getBoard().isOpen(nextTrace.getRow(), nextTrace.getCol() + 1)){ //checks point right of nextTrace
+					TraceState newRight = new TraceState(nextTrace, nextTrace.getRow(), nextTrace.getCol() + 1);
 					stateStore.store(newRight);
 				}
 			}
 		}
 		//TODO: output results to console or GUI, according to specified choice
-		
+		if(bestPaths.isEmpty()){
+			System.out.println("No solutions.");
+		}
+		for(TraceState t: bestPaths){
+			System.out.println(t.getBoard().toString());
+		}
 	}
 	
 	
