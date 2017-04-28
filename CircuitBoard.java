@@ -59,11 +59,15 @@ public class CircuitBoard {
 		 * Builds list containing invalid characters i.e. repeated start or end points
 		 */
 		IUDoubleLinkedList<Character> usedCharList = new IUDoubleLinkedList<Character>();
-		
 		board = new char[ROWS][COLS];
 		int j = 0;
 		int i = 0;
 		while(fileScan.hasNext()){
+			/*
+			 * TODO: To check if dimensions correctly represent grid, use .nextLine()
+			 * and count how many rows there actually are to what the file said.
+			 * Then use .nextToken()? to get the individual characters.
+			 */
 			String nextLine = fileScan.next();
 			char nextChar = nextLine.charAt(0);
 			/*
@@ -75,11 +79,41 @@ public class CircuitBoard {
 			/*
 			 * Checks if start or end points are repeated
 			 */
-			if(nextChar == '1' || nextChar == '2'){
+			if(nextChar == '1'){
+				int y = j;
+				int x = i;
 				if(usedCharList.contains(nextChar)){
 					throw new InvalidFileFormatException(null);
 				}else{
 					usedCharList.add(nextChar);
+					/*
+					 * designates startPoint
+					 */
+					if(y < COLS){
+						startingPoint = new Point(x, y);
+					}else{
+						y = 0;
+						x++;
+						startingPoint = new Point(x, y);
+					}
+				}
+			}else if(nextChar == '2'){
+				int y = j;
+				int x = i;
+				if(usedCharList.contains(nextChar)){
+					throw new InvalidFileFormatException(null);
+				}else{
+					usedCharList.add(nextChar);
+					/*
+					 * designates endingPoint
+					 */
+					if(y < COLS){
+						endingPoint = new Point(x, y);
+					}else{
+						y = 0;
+						x++;
+						endingPoint = new Point(x, y);
+					}
 				}
 			}
 			if(j < COLS){
@@ -107,6 +141,7 @@ public class CircuitBoard {
 		if(!usedCharList.contains('1') || !usedCharList.contains('2')){
 			throw new InvalidFileFormatException(null);
 		}
+		
 		fileScan.close();
 	}
 	
