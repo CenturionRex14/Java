@@ -1,5 +1,7 @@
 import java.awt.Point;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+
 
 /**
  * Search for shortest paths between start and end points on a circuit board
@@ -37,6 +39,8 @@ public class CircuitTracer {
 	private static void printUsage() {
 		//TODO: print out clear usage instructions when there are problems with
 		// any command line args
+		System.out.println("Usage: $ java CircuitTracer stack(-s)/queue(-q)" 
+							+"console(-c)/GUI(-g) file");
 	}
 	
 	/** 
@@ -47,14 +51,96 @@ public class CircuitTracer {
 	 */
 	private CircuitTracer(String[] args) {
 		//TODO: parse command line args
+		/*
+		 * checks args and assigns variables if valid, prints usage if invalid
+		 */
+		IUDoubleLinkedList<String> validFirstArgs = new IUDoubleLinkedList<String>();
+		validFirstArgs.add("-s");
+		validFirstArgs.add("-q");
+		String firstArg = args[0]; //first argument
+		if(!validFirstArgs.contains(firstArg)){
+			printUsage();
+		}
+		IUDoubleLinkedList<String> validSecondArgs = new IUDoubleLinkedList<String>();
+		validSecondArgs.add("-c");
+		validSecondArgs.add("-g");
+		String secondArg = args[1]; //second argument
+		if(!validSecondArgs.contains(secondArg)){
+			printUsage();
+		}
+		String filename = args[2]; //filename
+		if(secondArg.equals("-g")){
+			System.out.println("GUI(-q) not supported. Running in console(-c).");
+			secondArg = "-c";
+		}
 		//TODO: initialize the Storage to use either a stack or queue
+		if(firstArg.equals("-s")){
+			stateStore = new Storage<TraceState>(Storage.DataStructure.stack);
+		}else if(firstArg.equals("-q")){
+			stateStore = new Storage<TraceState>(Storage.DataStructure.queue);
+		}
 		//TODO: read in the CircuitBoard from the given file
+		try {
+			board = new CircuitBoard(filename);
+		} catch (FileNotFoundException e) {
+			System.out.println("File Not Found");
+			return;
+		}
 		//TODO: run the search for best paths
-		Storage<TraceState> stateStore = new Storage<TraceState>(null);
-		IUDoubleLinkedList<TraceState> bestPaths = new IUDoubleLinkedList<TraceState>();
-		
+		bestPaths = new ArrayList<TraceState>();
+		/*
+		 * manual solution to finding first trace points
+		 */
+		if(board.isOpen(board.getStartingPoint().x -1, board.getStartingPoint().y)){ //checks point below starting
+			TraceState below = new TraceState(board, board.getStartingPoint().x -1, board.getStartingPoint().y);
+			stateStore.store(below);
+		}
+		if(board.isOpen(board.getStartingPoint().x + 1, board.getStartingPoint().y)){ //checks point above starting
+			TraceState above = new TraceState(board, board.getStartingPoint().x + 1, board.getStartingPoint().y);
+			stateStore.store(above);
+		}
+		if(board.isOpen(board.getStartingPoint().x, board.getStartingPoint().y - 1)){ //checks point left of starting
+			TraceState left = new TraceState(board, board.getStartingPoint().x, board.getStartingPoint().y - 1);
+			stateStore.store(left);
+		}
+		if(board.isOpen(board.getStartingPoint().x, board.getStartingPoint().y + 1)){ //checks point right of starting
+			TraceState right = new TraceState(board, board.getStartingPoint().x, board.getStartingPoint().y + 1);
+			stateStore.store(right);
+		}
+		while(!stateStore.isEmpty()){
+			TraceState nextTrace = stateStore.retreive();
+			if(nextTrace.isComplete()){
+				if(!bestPaths.isEmpty()){
+					if(nextTrace.getPath().size() == bestPaths.get(0).pathLength()){
+						bestPaths.add(nextTrace);
+					}else if(nextTrace.getPath().size() < bestPaths.get(0).pathLength()){
+						bestPaths.clear();
+						bestPaths.add(nextTrace);
+					}
+				}else{
+					bestPaths.add(nextTrace);
+				}
+			}else{ //generate all valid next TraceState objects from the current TraceState and add them to stateStore
+				if(board.isOpen(nextTrace.getRow() - 1, nextTrace.getCol())){ //checks point below nextTrace
+					TraceState newBelow = new TraceState(board, nextTrace.getRow() - 1, nextTrace.getCol());
+					stateStore.store(newBelow);
+				}
+				if(board.isOpen(nextTrace.getRow() + 1, nextTrace.getCol())){ //checks point above nextTrace
+					TraceState newAbove = new TraceState(board, nextTrace.getRow() + 1, nextTrace.getCol());
+					stateStore.store(newAbove);
+				}
+				if(board.isOpen(nextTrace.getRow(), nextTrace.getCol() - 1)){ //checks point left of nextTrace
+					TraceState newLeft = new TraceState(board, nextTrace.getRow(), nextTrace.getCol() - 1);
+					stateStore.store(newLeft);
+				}
+				if(board.isOpen(nextTrace.getRow(), nextTrace.getCol() + 1)){ //checks point right of nextTrace
+					TraceState newRight = new TraceState(board, nextTrace.getRow(), nextTrace.getCol() + 1);
+					stateStore.store(newRight);
+				}
+			}
+		}
 		//TODO: output results to console or GUI, according to specified choice
-
+		
 	}
 	
 	
