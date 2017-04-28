@@ -62,83 +62,86 @@ public class CircuitBoard {
 		board = new char[ROWS][COLS];
 		int j = 0;
 		int i = 0;
+		int realRowCount = 0;
 		while(fileScan.hasNext()){
-			/*
-			 * TODO: To check if dimensions correctly represent grid, use .nextLine()
-			 * and count how many rows there actually are to what the file said.
-			 * Then use .nextToken()? to get the individual characters.
-			 */
-			String nextLine = fileScan.next();
-			char nextChar = nextLine.charAt(0);
-			/*
-			 * Checks if char is valid
-			 */
-			if(!allowedCharList.contains(nextChar)){
-				throw new InvalidFileFormatException(null);
-			}
-			/*
-			 * Checks if start or end points are repeated
-			 */
-			if(nextChar == '1'){
-				int y = j;
-				int x = i;
-				if(usedCharList.contains(nextChar)){
+			String nextLine = fileScan.nextLine();
+			Scanner lineScan = new Scanner(nextLine);
+			realRowCount++; //For checking dimensions
+			while(lineScan.hasNext()) {
+				String nextToken = lineScan.next();
+				char nextChar = nextToken.charAt(0);
+				/*
+				 * Checks if char is valid
+				 */
+				if (!allowedCharList.contains(nextChar)) {
+					lineScan.close();
 					throw new InvalidFileFormatException(null);
-				}else{
-					usedCharList.add(nextChar);
-					/*
-					 * designates startPoint
-					 */
-					if(y < COLS){
-						startingPoint = new Point(x, y);
-					}else{
-						y = 0;
-						x++;
-						startingPoint = new Point(x, y);
+				}
+				/*
+				 * Checks if start or end points are repeated
+				 */
+				if (nextChar == '1') {
+					int y = j;
+					int x = i;
+					if (usedCharList.contains(nextChar)) {
+						throw new InvalidFileFormatException(null);
+					} else {
+						usedCharList.add(nextChar);
+						/*
+						 * designates startPoint
+						 */
+						if (y < COLS) {
+							startingPoint = new Point(x, y);
+						} else {
+							y = 0;
+							x++;
+							startingPoint = new Point(x, y);
+						}
+					}
+				} else if (nextChar == '2') {
+					int y = j;
+					int x = i;
+					if (usedCharList.contains(nextChar)) {
+						throw new InvalidFileFormatException(null);
+					} else {
+						usedCharList.add(nextChar);
+						/*
+						 * designates endingPoint
+						 */
+						if (y < COLS) {
+							endingPoint = new Point(x, y);
+						} else {
+							y = 0;
+							x++;
+							endingPoint = new Point(x, y);
+						}
 					}
 				}
-			}else if(nextChar == '2'){
-				int y = j;
-				int x = i;
-				if(usedCharList.contains(nextChar)){
-					throw new InvalidFileFormatException(null);
-				}else{
-					usedCharList.add(nextChar);
-					/*
-					 * designates endingPoint
-					 */
-					if(y < COLS){
-						endingPoint = new Point(x, y);
-					}else{
-						y = 0;
-						x++;
-						endingPoint = new Point(x, y);
-					}
-				}
+				if (j < COLS) {
+					board[i][j] = nextChar;
+					j++;
+				} else {
+					j = 0;
+					i++;
+					board[i][j] = nextChar;
+					j++;
+				} 
 			}
-			if(j < COLS){
-				board[i][j] = nextChar;
-				j++;
-			}else{
-				j = 0;
-				i++;
-				board[i][j] = nextChar;
-				j++;
-			}
+			lineScan.close();
 		}
 		/*
 		 * Checks if given dimensions match actual dimensions
 		 * TODO ensure rows and cols are as specified (don't know how)
 		 */
-		if(j != COLS || i != ROWS - 1){
+		if(j != COLS || i != ROWS - 1 || realRowCount != ROWS + 1){
+			fileScan.close();
 			throw new InvalidFileFormatException(null);
 		}
-		
-		
 		/*
 		 * Checks if file has both start and end points
 		 */
 		if(!usedCharList.contains('1') || !usedCharList.contains('2')){
+			fileScan.close();
 			throw new InvalidFileFormatException(null);
 		}
 		
